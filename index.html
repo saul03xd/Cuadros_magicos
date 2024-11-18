@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <title>Cuadros Mágicos</title>
+    <style>
+      body {
+    font-family: "Smile Summer", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url("fondo.png"); /* Cambia 'fondo.jpg' por la ruta de tu imagen */
+    background-size: cover; /* La imagen se ajusta para cubrir todo el fondo */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+}
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #470c58;
+            font-size: 45px;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .buttons .left, .buttons .right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            font-family: "Chatkids", sans-serif;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none; 
+        }
+        .button-ayuda {
+            background-image: url("ayuda.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: left center;
+            padding-left: 50px;
+            background-color: #CDA0CB;
+        }
+        .button-reiniciar {
+            background-image: url("reiniciar.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: left center;
+            padding-left: 50px;
+            background-color: #7ECACA;
+        }
+        .button-calificar {
+            background-image: url("calificar.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: left center;
+            padding-left: 50px;
+            background-color: #FF7E88;
+        }
+        .button-tutorial {
+            background-image: url("tutorial.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: left center;
+            padding-left: 50px;
+            background-color: #FFFF9F;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .magic-square {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-gap: 10px;
+            justify-content: center;
+            background-color: lightblue;
+            padding: 15px;
+            border: 2px solid #007acc;
+        }
+        .magic-square input {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            text-align: center;
+        }
+        .result {
+            font-size: 16px;
+        }
+        .chatbot-container {
+            margin-top: 20px;
+            text-align: left;
+            background-color: #f4f4f9;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: none; /* Oculto inicialmente */
+            font-family: Arial, sans-serif; /* Cambia la fuente a Arial */
+        }
+        .chatbot-messages {
+            height: 100px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-family: Arial, sans-serif; /* Cambia la fuente a Arial */
+        }
+        .chatbot-messages p {
+            margin: 5px 0;
+        }
+        .chatbot-input {
+            display: flex;
+        }
+        .chatbot-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+            font-family: Arial, sans-serif; /* Cambia la fuente a Arial */
+        }
+        .chatbot-input button {
+            padding: 8px 15px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-family: Arial, sans-serif; /* Cambia la fuente a Arial */
+        }
+        .video-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            z-index: 1000;
+            text-align: center;
+            border-radius: 10px;
+        }
+        .video-container video {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .video-container button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .video-container button:hover {
+            background-color: #005f8a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cuadros Mágicos</h1>
+        
+        <div class="buttons">
+            <div class="left">
+                <button class="button-ayuda" onclick="toggleChatbot()">Ayuda</button>
+                <button class="button-tutorial" onclick="mostrarTutorial()">Tutorial</button>
+            </div>
+            <div class="right">
+                <button class="button-reiniciar" onclick="inicializarCuadroMagico()">Reiniciar</button>
+                <button class="button-calificar" onclick="calificarCuadroMagico()">Calificar</button>
+            </div>
+        </div>
+        
+        <div class="magic-square" id="magicSquare">
+            <!-- Se insertarán las entradas de la cuadrícula -->
+        </div>
+        
+        <div class="result" id="resultText"></div>
+
+        <!-- Chatbot Container -->
+        <div class="chatbot-container" id="chatbotContainer">
+            <div class="chatbot-messages" id="chatbotMessages"></div>
+            <div class="chatbot-input">
+                <input type="text" id="chatbotInput" placeholder="Escribe una pregunta..." onkeypress="if(event.key === 'Enter') responderChatbot()">
+                <button onclick="responderChatbot()">Enviar</button>
+            </div>
+        </div>
+
+        <!-- Contenedor del video tutorial -->
+        <div class="video-container" id="videoContainer">
+            <video id="tutorialVideo" controls>
+                <source src="tutorial.mp4" type="video/mp4">
+                Tu navegador no soporta el elemento de video.
+            </video>
+            <button onclick="cerrarVideo()">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        function generarCuadroMagico() {
+            return [
+                [8, 1, 6],
+                [3, 5, 7],
+                [4, 9, 2]
+            ];
+        }
+
+        function quitarNumeros(cuadro, cantidad) {
+            const posiciones = Array.from({length: 9}, (_, i) => [Math.floor(i / 3), i % 3]);
+            for (let k = 0; k < cantidad; k++) {
+                const [i, j] = posiciones.splice(Math.floor(Math.random() * posiciones.length), 1)[0];
+                cuadro[i][j] = "";
+            }
+            return cuadro;
+        }
+
+        function inicializarCuadroMagico() {
+            const cuadroMagico = quitarNumeros(generarCuadroMagico(), 4);
+            const magicSquareDiv = document.getElementById("magicSquare");
+            magicSquareDiv.innerHTML = "";
+            cuadroMagico.forEach(fila => {
+                fila.forEach(num => {
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.value = num;
+                    input.readOnly = num !== "";
+                    magicSquareDiv.appendChild(input);
+                });
+            });
+            document.getElementById("resultText").textContent = "";
+        }
+
+        function calificarCuadroMagico() {
+            const cuadroMagicoCorrecto = generarCuadroMagico();
+            const inputs = Array.from(document.getElementById("magicSquare").getElementsByTagName("input"));
+            let correcto = true;
+            for (let i = 0; i < 3 && correcto; i++) {
+                for (let j = 0; j < 3 && correcto; j++) {
+                    const valor = inputs[i * 3 + j].value;
+                    if (!inputs[i * 3 + j].readOnly && parseInt(valor) !== cuadroMagicoCorrecto[i][j]) {
+                        correcto = false;
+                    }
+                }
+            }
+            document.getElementById("resultText").textContent = correcto ? "¡Correcto!" : "¡Intenta nuevamente!";
+        }
+
+        function toggleChatbot() {
+            const chatbotContainer = document.getElementById("chatbotContainer");
+            chatbotContainer.style.display = chatbotContainer.style.display === "none" || chatbotContainer.style.display === "" ? "block" : "none";
+        }
+
+        function responderChatbot() {
+            const input = document.getElementById("chatbotInput");
+            const mensaje = input.value.trim();
+            if (!mensaje) return;
+
+            const chatbotMessages = document.getElementById("chatbotMessages");
+            const usuarioMessage = document.createElement("p");
+            usuarioMessage.textContent = `Tú: ${mensaje}`;
+            chatbotMessages.appendChild(usuarioMessage);
+
+            const respuesta = obtenerRespuestaChatbot(mensaje);
+            const chatbotMessage = document.createElement("p");
+            chatbotMessage.textContent = `Bot: ${respuesta}`;
+            chatbotMessages.appendChild(chatbotMessage);
+
+            input.value = "";
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        function obtenerRespuestaChatbot(mensaje) {
+            const respuestas = {
+                
+                // Preguntas similares con la misma respuesta
+                "como se juega?": "Debes completar el cuadro para que todas las filas, columnas y diagonales sumen lo mismo.",
+                "como se juega": "Debes completar el cuadro para que todas las filas, columnas y diagonales sumen lo mismo.",
+                "¿como jugar?": "Debes completar el cuadro para que todas las filas, columnas y diagonales sumen lo mismo.",
+                "¿cómo jugar?": "Debes completar el cuadro para que todas las filas, columnas y diagonales sumen lo mismo.",
+
+                
+                "¿que es un cuadro magico?": "En un cuadro mágico 3x3, la suma mágica es 15.",
+                "que es un cuadro magico?": "En un cuadro mágico 3x3, la suma mágica es 15.",
+                "que es un cuadro magico": "cuadricula 3x3, la suma mágica es 15.",
+                "cual es el resultado de la suma?": "En un cuadro mágico 3x3, la suma mágica es 15.",
+                "cual debe ser la suma?": "En un cuadro mágico 3x3, la suma mágica es 15.",
+                "cual debe ser la suma?": "En un cuadro mágico 3x3, la suma mágica es 15.",
+            
+                "hola": "¡Hola! ¿En qué puedo ayudarte?",
+                "buenas": "¡Hola! ¿En qué puedo ayudarte?",
+                "Hola": "¡Hola! ¿En qué puedo ayudarte?",
+            
+                "adiós": "Gracias por jugar. ¡Hasta luego!",
+                "adios": "Gracias por jugar. ¡Hasta luego!",
+                "Adios": "Gracias por jugar. ¡Hasta luego!",
+
+
+                 "bye": "Gracias por jugar. ¡Hasta luego!",
+                "nos vemos": "Gracias por jugar. ¡Hasta luego!",
+            
+                "¿qué es un cuadro mágico?": "Es una matriz en la que la suma de los números en cada fila, columna y diagonal es igual.",
+                "para que sirve un cuadro mágico?": "Es una matriz en la que la suma de los números en cada fila, columna y diagonal es igual.",
+                "¿Qué significa cuadro mágico?": "Es una matriz en la que la suma de los números en cada fila, columna y diagonal es igual.",
+
+                "¿que es un cuadro magico?": "Es una matriz en la que la suma de los números en cada fila, columna y diagonal es igual.",
+                "para que sirve un cuadro magico?": "Es una matriz en la que la suma de los números en cada fila, columna y diagonal es igual.",
+                "que significa cuadro magico?": "Es una matriz en la que la suma de los números en cada fila, columna y diagonal es igual.",
+            
+                // Otras respuestas únicas
+                "¿cuántos números tiene un cuadro mágico 3x3?": "Tiene 9 números, del 1 al 9, y no se repiten.",
+                "es difcil resolver un cuadro magico?": "No es tan difícil, solo necesitas practicar un poco.",
+                "¿puedes darme una pista?": "Observa que la suma mágica es 15. Intenta que cada fila, columna y diagonal sume eso.",
+                "¿qué pasa si me equivoco?": "¡No te preocupes! Puedes reiniciar el cuadro y volver a intentarlo.",
+                "¿hay cuadros mágicos más grandes?": "Sí, existen cuadros mágicos de tamaños mayores como 4x4 o 5x5, pero son más complejos.",
+                "¿cuál es la historia de los cuadros mágicos?": "Los cuadros mágicos tienen una larga historia y fueron estudiados en la antigua China e India.",
+                "¿puedo crear mi propio cuadro mágico?": "¡Por supuesto! Solo necesitas asegurarte de que todas las sumas sean iguales."
+            
+                        };
+            return respuestas[mensaje.toLowerCase()] || "Lo siento, no entendí tu pregunta.";
+        }
+
+        function mostrarTutorial() {
+            document.getElementById("videoContainer").style.display = "block";
+        }
+
+       function cerrarVideo() {
+    const video = document.getElementById("tutorialVideo");
+    video.pause(); // Pausa el video
+    video.currentTime = 0; // Opcional: Reinicia el video al inicio
+    document.getElementById("videoContainer").style.display = "none";
+}
+
+        // Inicializar el cuadro mágico al cargar la página
+        inicializarCuadroMagico();
+    </script>
+</body>
+</html>
